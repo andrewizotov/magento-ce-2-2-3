@@ -1,0 +1,31 @@
+<div class="newsletter-signup">
+    <p>Join our email marketing list and stay informed of the latest news and promotions, and receive <strong>20% off your next order.</strong></p>
+    <!-- ko if: newsletterChecked -->
+    <label>
+        <span data-bind="text: $t('Yes')"></span>
+        <input type="radio" checked>
+    </label>
+    <label>
+        <span data-bind="text: $t('No')"></span>
+        <input type="radio" data-bind="click: uncheck">
+    </label>
+    <!-- /ko -->
+    <!-- ko ifnot: newsletterChecked -->
+    <label>
+        <span data-bind="text: $t('Yes')"></span>
+        <input type="radio" data-bind="click: check">
+    </label>
+    <label>
+        <span data-bind="text: $t('No')"></span>
+        <input type="radio" checked>
+    </label>
+    <!-- /ko -->
+</div>
+<div class="third-party">
+    <p>
+        From time to time Cox &amp; Cox may make names and addresses from our mailing
+        list available to carefully selected companies whose products may interest you.
+        If you would prefer to have your name withheld please tick this box:
+    </p>
+    <input name="third-party" type="checkbox" data-bind="checked: thirdParty, click: thirdPartyUpdate"/>
+</div>

@@ -137,7 +137,9 @@ return array (
     'Dotdigitalgroup_Email' => 1,
     'Magento_WishlistAnalytics' => 1,
     'Magento_WishlistSampleData' => 1,
+    'Sam_SpecialMeasure' => 1,
     'Shopial_Facebook' => 1,
+    'Space48_ThirdParty' => 1,
     'Temando_Shipping' => 1,
   ),
 );
