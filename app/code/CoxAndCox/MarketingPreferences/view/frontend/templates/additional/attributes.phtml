@@ -1,0 +1,14 @@
+<?php
+/**
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Customer\Block\Newsletter       $newsLetterBlock
+ */
+
+ $newsLetterBlock = $block->getParentBlock();
+/* @var \Magento\Customer\Model\Data\Customer $customer */
+ $customer = $newsLetterBlock->getCustomer();
+ /* @var Magento\Framework\Api\AttributeInterface $thirdParty*/
+
+
+//echo $thirdParty->getAttributeCode();
+?>
