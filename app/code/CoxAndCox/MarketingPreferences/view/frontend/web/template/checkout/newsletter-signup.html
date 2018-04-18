@@ -27,5 +27,11 @@
         list available to carefully selected companies whose products may interest you.
         If you would prefer to have your name withheld please tick this box:
     </p>
-    <input name="third-party" type="checkbox" data-bind="checked: thirdParty, click: thirdPartyUpdate"/>
+    <input name="third-party"  type="checkbox" data-bind="checked: thirdParty, click: thirdPartyUpdate, afterRender: thirdPartyLoad" />
+</div>
+<div class="postal-mailings">
+    <p>
+        Postal Mailings
+    </p>
+    <input name="postal-mailings" type="checkbox" data-bind="checked: postalMailings, click: postalMailingsUpdate, afterRender: postalMailingsLoad" />
 </div>

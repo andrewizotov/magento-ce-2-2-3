@@ -16,19 +16,36 @@ use Magento\Customer\Model\Customer;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\Action\Context;
 use \CoxAndCox\MarketingPreferences\Model\ThirdParty;
+use \CoxAndCox\MarketingPreferences\Model\PostalMailings;
 use \CoxAndCox\MarketingPreferences\Model\Subscribe;
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\Json\Helper\Data;
 
 class SignUp extends Action
 {
 
-    const OPTOUT = 19;
+    const OPTOUT = 0;
 
-    const OPTIN = 18;
+    const OPTIN = 1;
+
+    const OPTPOSTALMAILINGSOUT = 0;
+
+    const OPTPOSTALMAILINGSIN = 1;
 
     const SUBSCRIBED = 1;
 
     const UNSUBSCRIBED = 0;
+
+
+    /**
+     * @var \Magento\Framework\Json\Helper\Data
+     */
+    private $jsonHelper;
+
+    /**
+     * @var ThirdParty
+     */
+    private $postalMailings;
 
     /**
      * @var ThirdParty
@@ -53,18 +70,25 @@ class SignUp extends Action
      *
      * @param Context    $context
      * @param ThirdParty $thirdParty
+     * @param PostalMailings $postalMailings
      * @param Subscribe  $subscribe
      * @param Session    $session
+     * @param Data       $jsonHelper
      */
     public function __construct(
         Context $context,
         ThirdParty $thirdParty,
+        PostalMailings $postalMailings,
         Subscribe $subscribe,
-        Session $session
+        Session $session,
+        Data $jsonHelper
     ) {
         $this->thirdParty = $thirdParty;
+        $this->postalMailings = $postalMailings;
         $this->subscribe = $subscribe;
         $this->session = $session;
+        $this->jsonHelper = $jsonHelper;
+
         parent::__construct($context);
     }
 
@@ -76,17 +100,49 @@ class SignUp extends Action
      */
     public function execute()
     {
+
         $optInParams = $this->getRequest()->getParams();
+
         if ($billingEmail = $this->getCustomerEmail()) {
-            $this->thirdParty->setThirdPartyDataAgainstCustomer(
-                $this->getCustomerId(),
-                $this->optedIntoThirdParty($optInParams)
-            );
-            $this->subscribe->updateSubscriberStatus(
-                $this->getCustomerId(),
-                $billingEmail,
-                $this->canSubscribeToNewsLetter($optInParams)
-            );
+
+            if(isset($optInParams['type_mailing'])) {
+
+                $thirdPartyValue = false;
+                $responseData = [];
+                if($optInParams['type_mailing'] == 'thirdParty') {
+                    $thirdPartyValue = $this->thirdParty->getThirdPartyDataAgainstCustomer(
+                        $this->getCustomerId()
+                    );
+                    $responseData['third_party'] = $thirdPartyValue;
+                }
+                $postalMailingsValue = false;
+                if($optInParams['type_mailing'] == 'postalMailings') {
+                    $postalMailingsValue = $this->postalMailings->getPostalMailingsDataAgainstCustomer(
+                        $this->getCustomerId()
+                    );
+                    $responseData['postal_mailings'] = $postalMailingsValue;
+                }
+
+                $this->getResponse()->representJson($this->jsonHelper->jsonEncode($responseData));
+
+            } else {
+
+                $this->thirdParty->setThirdPartyDataAgainstCustomer(
+                    $this->getCustomerId(),
+                    $this->optedIntoThirdParty($optInParams)
+                );
+
+                $this->postalMailings->setPostalMailingsDataAgainstCustomer(
+                    $this->getCustomerId(),
+                    $this->optedIntoPostalMailings($optInParams)
+                );
+
+                $this->subscribe->updateSubscriberStatus(
+                    $this->getCustomerId(),
+                    $billingEmail,
+                    $this->canSubscribeToNewsLetter($optInParams)
+                );
+            }
         }
     }
 
@@ -129,6 +185,16 @@ class SignUp extends Action
     private function optedIntoThirdParty($optInParams): int
     {
         return $optInParams['optIn'] == self::OPTIN ? self::OPTIN : self::OPTOUT;
+    }
+
+    /**
+     * @param $optInParams
+     *
+     * @return int
+     */
+    private function optedIntoPostalMailings($optInParams): int
+    {
+        return $optInParams['optInPostalMailings'] == self::OPTPOSTALMAILINGSIN ? self::OPTPOSTALMAILINGSIN : self::OPTPOSTALMAILINGSOUT;
     }
 
     /**

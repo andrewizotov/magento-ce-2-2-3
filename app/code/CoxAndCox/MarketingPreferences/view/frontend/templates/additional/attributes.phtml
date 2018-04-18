@@ -4,11 +4,22 @@
  * @var \Magento\Customer\Block\Newsletter       $newsLetterBlock
  */
 
- $newsLetterBlock = $block->getParentBlock();
+$newsLetterBlock = $block->getParentBlock();
 /* @var \Magento\Customer\Model\Data\Customer $customer */
- $customer = $newsLetterBlock->getCustomer();
- /* @var Magento\Framework\Api\AttributeInterface $thirdParty*/
+$customer = $newsLetterBlock->getCustomer();
+/* @var \Magento\Framework\Api\AttributeValue $valuePostalMailings */
+$valuePostalMailings = $customer->getCustomAttribute('postal_mailings');
+/* @var \Magento\Framework\Api\AttributeValue $valueThirdParty */
+$valueThirdParty = $customer->getCustomAttribute('third_party');
 
-
-//echo $thirdParty->getAttributeCode();
 ?>
+
+<div class="field choice">
+    <input type="checkbox" name="third_party" id="third-party" data-role="third-party" value="1" <?php if ($valueThirdParty->getValue()): ?> checked="checked"<?php endif; ?> title="<?= $block->escapeHtmlAttr(__('Third Party')) ?>" class="checkbox" />
+    <label class="label" for="change-email"><span><?= $block->escapeHtml(__('Third Party')) ?></span></label>
+</div>
+
+<div class="field choice">
+    <input type="checkbox" name="postal_mailings" id="postal-mailings" data-role="postal-mailings" value="1" <?php if ($valuePostalMailings->getValue()): ?> checked="checked"<?php endif; ?> title="<?= $block->escapeHtmlAttr(__('Postal Mailings')) ?>" class="checkbox" />
+    <label class="label" for="change-email"><span><?= $block->escapeHtml(__('Postal Mailings')) ?></span></label>
+</div>
